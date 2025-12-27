@@ -18,12 +18,14 @@ void Task1(void*)
 
 #if LEDC_PWM
 
-static constexpr uint8_t LedPwmPin = 2; // adjust to your LED PWM pin
+static constexpr uint8_t LedPwmPin = 4; // adjust to your LED PWM pin
 static constexpr int LedPwmFrequency = 5000; // frequency (e.g., 5000 Hz)
 static constexpr int LedPwmResolution = 8; // resolution (8-bit gives a range of 0-255)
 
 void Task2(void*)
 {
+  delay(500);
+
   while (1)
   {
     // increase brightness (fade in)
@@ -33,10 +35,10 @@ void Task2(void*)
       delay(5);
     }
 
-    delay(500);
+    delay(1000);
 
     // decrease brightness (fade out)
-    for(int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
+    for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--)
     {
       ledcWrite(LedPwmPin, dutyCycle);
       delay(5);
@@ -50,10 +52,13 @@ void Task2(void*)
 
 void setup()
 {
-  Serial.begin(115200);
-
   pinMode(LedPin1, OUTPUT);
   pinMode(LedPin2, OUTPUT);
+#if LEDC_PWM
+  pinMode(LedPwmPin, OUTPUT);
+#endif
+
+  Serial.begin(115200);
 
   if (xTaskCreate(Task1, "Task1", configMINIMAL_STACK_SIZE, NULL, 1/*Priority*/, NULL) == pdTRUE)
   {
